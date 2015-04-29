@@ -58,19 +58,19 @@
 
 				<section>
 					<p>
-						<h3>What is EC2 Container Service (ECS)?</h3><br />
+						<h1>What is EC2 Container Service (ECS)?</h1><br />
 						<ul>
-							<li class="fragment">container management service for Docker</li>
-							<li class="fragment">runs on top of Amazon EC2 instances</li>
-							<li class="fragment">provides API/WebUI/CLI for cluster management</li>
-							<li class="fragment">no additional charge</li>
+							<li class="fragment">Container management service for Docker</li>
+							<li class="fragment">Runs on top of Amazon EC2 instances</li>
+							<li class="fragment">Provides API/WebUI/CLI for cluster management</li>
+							<li class="fragment">No additional charge</li>
 						</ul>
 					</p>
 				</section>
 
 				<section>
 					<p>
-						<h3>Glossary</h3><br />
+						<h1>Glossary</h1><br />
 						<ul>
 							<li class="fragment"><b>Cluster</b><br /><small>A logical grouping of container instances that you can place tasks on.</small></li>
 							<li class="fragment"><b>Container instance</b><br /><small>An EC2 instance that is running the ECS agent and has been registered into a cluster.</small></li>
@@ -84,7 +84,7 @@
 
 				<section>
 					<p>
-						<h3>Glossary</h3><br />
+						<h1>Glossary</h1><br />
 						<ul>
 							<li class="fragment"><b>Task definition</b><br /><small>A description of an application that contains one or more container definitions.</small></li>
 							<li class="fragment"><b>Service</b><br /><small>An Amazon ECS service allows you to run and maintain a specified number of instances of a task definition simultaneously.</small></li>
@@ -97,18 +97,18 @@
 
 				<section>
 					<p>
-						<h3>Container instance</h3><br />
+						<h1>Container instance</h1><br />
 						<ul>
 							<li class="fragment">Amazon EC2 instance</li>
-							<li class="fragment">by default Amazon Linux AMI</li>
-							<li class="fragment">you can use any other AMI e.g. CoreOS</li>
-							<li class="fragment">amazon/amazon-ecs-agent container</li>
+							<li class="fragment">By default Amazon Linux AMI</li>
+							<li class="fragment">You can use any other AMI e.g. CoreOS</li>
+							<li class="fragment">Amazon/amazon-ecs-agent container</li>
 						</ul>
 					</p>
 				</section>
 
 				<section>
-						<h3>Scheduler</h3><br />
+						<h1>Scheduler</h1><br />
 					<p>
 						Initial proof of concept how to integrate Apache Mesos with Amazon ECS<br /><br />
 						<small><a href="https://github.com/awslabs/ecs-mesos-scheduler-driver">https://github.com/awslabs/ecs-mesos-scheduler-driver</a></small>
@@ -117,7 +117,7 @@
 
 				<section>
 					<p>
-						<h3>Task definition</h3>
+						<h1>Task definition</h1>
 						<pre data-trim style="font-size: 16px;">
 {
   "containerDefinitions": [
@@ -152,11 +152,11 @@
 
 				<section>
 					<p>
-						<h3>Task definition</h3><br />
+						<h1>Task definition</h1><br />
 						<ul>
-							<li class="fragment"><b>essential</b><br /><small>If the essential parameter of a container is marked as true, the failure of that container stops the task. If the essential parameter of a container is marked as false, then its failure does not affect the rest of the containers in a task.</small></li>
-							<li class="fragment"><b>cpu</b><br /><small>The number of cpu units to reserve for the container. A container instance has 1,024 cpu units for every CPU core.</small></li>
-							<li class="fragment"><b>memory</b><br /><small>The number of MiB of memory to reserve for the container. If your container attempts to exceed the memory allocated here, the container is killed.</small></li>
+							<li class="fragment"><b>Essential</b><br /><small>If the essential parameter of a container is marked as true, the failure of that container stops the task. If the essential parameter of a container is marked as false, then its failure does not affect the rest of the containers in a task.</small></li>
+							<li class="fragment"><b>CPU</b><br /><small>The number of cpu units to reserve for the container. A container instance has 1,024 cpu units for every CPU core.</small></li>
+							<li class="fragment"><b>Memory</b><br /><small>The number of MiB of memory to reserve for the container. If your container attempts to exceed the memory allocated here, the container is killed.</small></li>
 						</ul>
 
 						
@@ -165,7 +165,7 @@
 
 				<section>
 					<p>
-						<h3>Service</h3>
+						<h1>Service</h1>
 						<pre data-trim style="font-size: 18px;">
 {
     "serviceName": "wordpress",
@@ -185,10 +185,10 @@
 
 				<section>
 					<p>
-						<h3>Service</h3><br />
+						<h1>Service</h1><br />
 						<ul>
-							<li class="fragment"><b>taskDefinition</b><br /><small>The family and revision (family:revision).</small></li>
-							<li class="fragment"><b>loadBalancers</b><br /><small>A list of load balancer objects to use with your service. Currently you are limited to one load balancer per service.<br /><br />Elastic Load Balancing currently supports a fixed relationship between the load balancer port and the container instance port. For example, it is possible to map the load balancer port 80 to the container instance port 3030 and the load balancer port 4040 to the container instance port 4040. However, it is not possible to map the load balancer port 80 to port 3030 on one container instance and port 4040 on another container instance.</small></li>
+							<li class="fragment"><b>Task Definition</b><br /><small>The family and revision (family:revision).</small></li>
+							<li class="fragment"><b>Load Balancers</b><br /><small>A list of load balancer objects to use with your service. Currently you are limited to one load balancer per service.<br /><br />Elastic Load Balancing currently supports a fixed relationship between the load balancer port and the container instance port. For example, it is possible to map the load balancer port 80 to the container instance port 3030 and the load balancer port 4040 to the container instance port 4040. However, it is not possible to map the load balancer port 80 to port 3030 on one container instance and port 4040 on another container instance.</small></li>
 						</ul>
 
 						
@@ -197,21 +197,21 @@
 
 				<section>
 					<p>
-						<h3>Amazon ECS pros</h3><br />
+						<h1>Amazon ECS pros</h1><br />
 						<ul>
-							<li class="fragment">easy to use</li>
-							<li class="fragment">can save lot of time</li>
-							<li class="fragment">actively developed</li>
+							<li class="fragment">Easy to use</li>
+							<li class="fragment">Can save a lot of time</li>
+							<li class="fragment">Actively developed</li>
 						</ul>
 					</p>
 				</section>
 
 				<section>
 					<p>
-						<h3>Amazon ECS cons</h3><br />
+						<h1>Amazon ECS cons</h1><br />
 						<ul>
-							<li class="fragment">not SOA friendly</li>
-							<li class="fragment">lack of good service discovery</li>
+							<li class="fragment">Not SOA friendly</li>
+							<li class="fragment">Lack of good service discovery</li>
 						</ul>
 					</p>
 				</section>
