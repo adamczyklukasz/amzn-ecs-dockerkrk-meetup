@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Amazon ECS vs World Round 1</title>
+
+		<meta name="description" content="First round of really interesting fight at container management services market, Amazon EC2 Container Service (ECS) vs World!">
+		<meta name="author" content="Łukasz Adamczyk">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/striketech.css" id="striketech">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section class="title" data-background="#00baf2">
+					<h1>Amazon ECS vs World Round 1</h1>
+
+					<table class="footer">
+						<tr>
+							<td class="line"><img class="logo" src="graphics/striketech.png"></td>
+							<td>
+								<p>Łukasz Adamczyk</p>
+								<p>ladamczyk@striketech.pl</p>
+							</td>
+						</tr>
+					</table>
+
+
+				</section>
+
+				<section>
+					<p>
+						<h3>What is EC2 Container Service (ECS)?</h3><br />
+						<ul>
+							<li class="fragment">container management service for Docker</li>
+							<li class="fragment">runs on top of Amazon EC2 instances</li>
+							<li class="fragment">provides API/WebUI/CLI for cluster management</li>
+							<li class="fragment">no additional charge</li>
+						</ul>
+					</p>
+				</section>
+
+				<section>
+					<p>
+						<h3>Glossary</h3><br />
+						<ul>
+							<li class="fragment"><b>Cluster</b><br /><small>A logical grouping of container instances that you can place tasks on.</small></li>
+							<li class="fragment"><b>Container instance</b><br /><small>An EC2 instance that is running the ECS agent and has been registered into a cluster.</small></li>
+							<li class="fragment"><b>Container</b><br /><small>A Linux container that was created as part of a task.</small></li>
+							<li class="fragment"><b>Scheduler</b><br /><small>The method used for placing tasks on container instances.</small></li>
+						</ul>
+
+						
+					</p>
+				</section>
+
+				<section>
+					<p>
+						<h3>Glossary</h3><br />
+						<ul>
+							<li class="fragment"><b>Task definition</b><br /><small>A description of an application that contains one or more container definitions.</small></li>
+							<li class="fragment"><b>Service</b><br /><small>An Amazon ECS service allows you to run and maintain a specified number of instances of a task definition simultaneously.</small></li>
+							<li class="fragment"><b>Task</b><br /><small>An instantiation of a task definition that is running on a container instance.</small></li>
+						</ul>
+
+						
+					</p>
+				</section>
+
+				<section>
+					<p>
+						<h3>Container instance</h3><br />
+						<ul>
+							<li class="fragment">Amazon EC2 instance</li>
+							<li class="fragment">by default Amazon Linux AMI</li>
+							<li class="fragment">you can use any other AMI e.g. CoreOS</li>
+							<li class="fragment">amazon/amazon-ecs-agent container</li>
+						</ul>
+					</p>
+				</section>
+
+				<section>
+						<h3>Scheduler</h3><br />
+					<p>
+						Initial proof of concept how to integrate Apache Mesos with Amazon ECS<br /><br />
+						<small><a href="https://github.com/awslabs/ecs-mesos-scheduler-driver">https://github.com/awslabs/ecs-mesos-scheduler-driver</a></small>
+					</p>
+				</section>
+
+				<section>
+					<p>
+						<h3>Task definition</h3>
+						<pre data-trim style="font-size: 16px;">
+{
+  "containerDefinitions": [
+    {
+      "name": "wordpress",
+      "links": [
+        "mysql"
+      ],
+      "image": "wordpress",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80
+        }
+      ],
+      "memory": 500,
+      "cpu": 10
+    },
+    {
+      "name": "mysql",
+      "image": "mysql",
+      "cpu": 10,
+      "memory": 500,
+      "essential": true
+    }
+  ],
+  "family": "wordpress-with-mysql"
+}</pre>
+					</p>
+				</section>
+
+				<section>
+					<p>
+						<h3>Task definition</h3><br />
+						<ul>
+							<li class="fragment"><b>essential</b><br /><small>If the essential parameter of a container is marked as true, the failure of that container stops the task. If the essential parameter of a container is marked as false, then its failure does not affect the rest of the containers in a task.</small></li>
+							<li class="fragment"><b>cpu</b><br /><small>The number of cpu units to reserve for the container. A container instance has 1,024 cpu units for every CPU core.</small></li>
+							<li class="fragment"><b>memory</b><br /><small>The number of MiB of memory to reserve for the container. If your container attempts to exceed the memory allocated here, the container is killed.</small></li>
+						</ul>
+
+						
+					</p>
+				</section>
+
+				<section>
+					<p>
+						<h3>Service</h3>
+						<pre data-trim style="font-size: 18px;">
+{
+    "serviceName": "wordpress",
+    "taskDefinition": "wordpress-with-mysql:1",
+    "loadBalancers": [
+        {
+            "loadBalancerName": "elb-name",
+            "containerName": "wordpress",
+            "containerPort": 80
+        }
+    ],
+    "desiredCount": 10,
+    "role": "ecsServiceRole"
+}</pre>
+					</p>
+				</section>
+
+				<section>
+					<p>
+						<h3>Service</h3><br />
+						<ul>
+							<li class="fragment"><b>taskDefinition</b><br /><small>The family and revision (family:revision).</small></li>
+							<li class="fragment"><b>loadBalancers</b><br /><small>A list of load balancer objects to use with your service. Currently you are limited to one load balancer per service.<br /><br />Elastic Load Balancing currently supports a fixed relationship between the load balancer port and the container instance port. For example, it is possible to map the load balancer port 80 to the container instance port 3030 and the load balancer port 4040 to the container instance port 4040. However, it is not possible to map the load balancer port 80 to port 3030 on one container instance and port 4040 on another container instance.</small></li>
+						</ul>
+
+						
+					</p>
+				</section>
+
+				<section>
+					<p>
+						<h3>Amazon ECS pros</h3><br />
+						<ul>
+							<li class="fragment">easy to use</li>
+							<li class="fragment">can save lot of time</li>
+							<li class="fragment">actively developed</li>
+						</ul>
+					</p>
+				</section>
+
+				<section>
+					<p>
+						<h3>Amazon ECS cons</h3><br />
+						<ul>
+							<li class="fragment">not SOA friendly</li>
+							<li class="fragment">lack of good service discovery</li>
+						</ul>
+					</p>
+				</section>
+
+				<section class="title" data-background="#00baf2">
+					<h1>Thanks for your attention!</h1>
+
+					<table class="end">
+						<tr>
+							<td class="line">
+								<p>Łukasz Adamczyk</p>
+								<p class="dane">ladamczyk@striketech.pl</p>
+							</td>
+
+							<td>
+								<img class="logo2" src="graphics/striketech.png">
+								<p>hello@striketech.pl</p>
+								<p>wwww.striketech.pl</p>
+							</td>
+						</tr>
+					</table>
+
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'fade', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
